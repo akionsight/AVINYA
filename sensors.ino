@@ -7,32 +7,25 @@ const int trigPin3 = 12;
 
 const int trigPins[] = {10, 11, 12};
 
-// Define variables:
-
-int distances[6];
+int distances[7];
 int curDistSize = 0;
 
 void setup()
 {
-  // Define outputs
-
   for (int i = 0; i < 3; i++)
   {
-    digitalWrite(trigPins[i], LOW);
+    pinMode(trigPins[i], OUTPUT);
+  }
+
+  for (int i = 0; i < 2; i++)
+  {
+    pinMode(echoPin1[i], INPUT);
+    pinMode(echoPin2[i], INPUT);
   }
 
   for (int i = 0; i < 3; i++)
   {
-    for (i = 0; i < 2; i++)
-    {
-      pinMode(echoPin1[i], OUTPUT);
-      pinMode(echoPin2[i], OUTPUT);
-    }
-
-    for (int i = 0; i < 3; i++)
-    {
-      pinMode(echoPin3[i], OUTPUT);
-    }
+    pinMode(echoPin3[i], INPUT);
   }
 
   Serial.begin(9600);
@@ -40,69 +33,64 @@ void setup()
 
 void loop()
 {
-  // clear trigpin
-
-  digitalWrite(trigPin1, LOW);
-  digitalWrite(trigPin2, LOW);
-  digitalWrite(trigPin3, LOW);
-
-  delayMicroseconds(7);
-  ///////////////////////////////////////
-
-  digitalWrite(trigPin1, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trigPin1, LOW);
-
+  // Measure distance from the first set of sensors (echoPin1 and trigPin1)
   for (int i = 0; i < 2; i++)
   {
+    digitalWrite(trigPin1, LOW);
+    delayMicroseconds(2);
+    digitalWrite(trigPin1, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(trigPin1, LOW);
 
     int duration = pulseIn(echoPin1[i], HIGH);
-
     int distance = duration * 0.034 / 2;
 
     distances[curDistSize] = distance;
     curDistSize++;
   }
 
-  ////////////////////////////////////
-
-  digitalWrite(trigPin2, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trigPin2, LOW);
-
+  // Measure distance from the second set of sensors (echoPin2 and trigPin2)
   for (int i = 0; i < 2; i++)
   {
+    digitalWrite(trigPin2, LOW);
+    delayMicroseconds(2);
+    digitalWrite(trigPin2, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(trigPin2, LOW);
 
     int duration = pulseIn(echoPin2[i], HIGH);
-
     int distance = duration * 0.034 / 2;
 
     distances[curDistSize] = distance;
     curDistSize++;
   }
 
-  ////////////////////////////////////
-
-  digitalWrite(trigPin3, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trigPin3, LOW);
-
+  // Measure distance from the third set of sensors (echoPin3 and trigPin3)
   for (int i = 0; i < 3; i++)
   {
+    digitalWrite(trigPin3, LOW);
+    delayMicroseconds(2);
+    digitalWrite(trigPin3, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(trigPin3, LOW);
 
-    int duration = pulseIn(echoPin2[i], HIGH);
-
+    int duration = pulseIn(echoPin3[i], HIGH);
     int distance = duration * 0.034 / 2;
 
     distances[curDistSize] = distance;
     curDistSize++;
   }
 
-  for (int i = 0; i < 7; i++) {
-    Serial.println(distances[i]);
+  // Print the distance measurements
+  for (int i = 0; i < 7; i++)
+  {
+    Serial.print("Distance ");
+    Serial.print(i);
+    Serial.print(": ");
+    Serial.print(distances[i]);
+    Serial.println(" cm");
   }
 
   curDistSize = 0;
   delay(50);
-
 }
